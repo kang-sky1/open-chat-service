@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.goblin.openchatservice.ControllerTestSupport;
 import com.goblin.openchatservice.domain.member.mock.FakeMemberDto;
 import com.goblin.openchatservice.domain.member.model.CreateMember;
+import com.goblin.openchatservice.domain.member.model.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -23,18 +24,16 @@ class MemberControllerTest extends ControllerTestSupport {
     void create() throws Exception {
 
         CreateMember createMember = FakeMemberDto.createMember();
-        String testToken = "testToken";
+        Member member = Member.from(createMember, createMember.password());
 
-        when(memberService.create(any(CreateMember.class))).thenReturn(testToken);
+        when(memberService.create(any(CreateMember.class))).thenReturn(member);
 
         mockMvc.perform(
                         post(BASE_URL)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(createMember))
                 ).andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(result ->
-                        result.getResponse().getCookie("Authorization").getValue().equals(testToken));
+                .andExpect(status().isCreated());
     }
 
     @DisplayName("email 필드는 이메일 형식이어야 한다.")
