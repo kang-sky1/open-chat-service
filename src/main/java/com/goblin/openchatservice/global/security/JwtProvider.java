@@ -22,7 +22,7 @@ public class JwtProvider implements TokenProvider {
     private static final String BEARER = "Bearer ";
     private final Key key;
 
-    public JwtProvider(@Value("${spring.jwt.secretKey}") String secretKey) {
+    public JwtProvider(@Value("${jwt.secret.key}") String secretKey) {
         byte[] decode = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(decode);
     }

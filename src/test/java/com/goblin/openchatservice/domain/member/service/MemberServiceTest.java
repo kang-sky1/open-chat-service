@@ -3,6 +3,7 @@ package com.goblin.openchatservice.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.goblin.openchatservice.domain.auth.TokenProvider;
+import com.goblin.openchatservice.domain.member.mock.FakeMemberDto;
 import com.goblin.openchatservice.domain.member.mock.FakeMemberRepository;
 import com.goblin.openchatservice.domain.member.mock.FakePasswordEncoder;
 import com.goblin.openchatservice.domain.member.mock.FakeTokenProvider;
@@ -29,11 +30,7 @@ class MemberServiceTest {
     @Test
     @DisplayName("유저를 생성하면 토큰을 반환한다.")
     void create() {
-        CreateMember createMember = new CreateMember(
-            "TestUser",
-            "TestEmail",
-            "TestPassword"
-        );
+        CreateMember createMember = FakeMemberDto.createMember();
 
         String token = memberService.create(createMember);
 
