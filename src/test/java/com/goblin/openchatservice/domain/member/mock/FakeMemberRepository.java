@@ -17,11 +17,11 @@ public class FakeMemberRepository implements MemberRepository {
             members.add(result);
             return result;
         }
-        return null;
+        return member;
     }
 
     @Override
     public Member findById(Long id) {
-        return null;
+        return members.stream().filter(member -> member.id().equals(id)).findFirst().orElse(null);
     }
 }

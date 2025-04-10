@@ -16,11 +16,10 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider jwtProvider;
 
-    public String create(CreateMember createMember) {
+    public Member create(CreateMember createMember) {
         String encode = passwordEncoder.encode(createMember.password());
         Member member = Member.from(createMember, encode);
-        Member save = memberRepository.save(member);
-        return jwtProvider.createToken(save.id());
+        return memberRepository.save(member);
     }
 
 }

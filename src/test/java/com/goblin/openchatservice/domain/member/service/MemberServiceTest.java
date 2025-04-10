@@ -8,6 +8,7 @@ import com.goblin.openchatservice.domain.member.mock.FakeMemberRepository;
 import com.goblin.openchatservice.domain.member.mock.FakePasswordEncoder;
 import com.goblin.openchatservice.domain.member.mock.FakeTokenProvider;
 import com.goblin.openchatservice.domain.member.model.CreateMember;
+import com.goblin.openchatservice.domain.member.model.Member;
 import com.goblin.openchatservice.domain.member.service.port.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,15 +29,17 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("유저를 생성하면 토큰을 반환한다.")
+    @DisplayName("멤버를 생성하면 토큰을 반환한다.")
     void create() {
         CreateMember createMember = FakeMemberDto.createMember();
 
-        String token = memberService.create(createMember);
-
-        assertThat(token)
-            .isNotNull()
-            .isNotEmpty();
+        Member result = memberService.create(createMember);
+        Member findMember = memberRepository.findById(result.id());
+        assertThat(result)
+                .extracting("id", "name", "email", "password")
+                .contains(
+                    findMember.id(), findMember.name(), findMember.email(), findMember.password()
+                );
     }
 
 

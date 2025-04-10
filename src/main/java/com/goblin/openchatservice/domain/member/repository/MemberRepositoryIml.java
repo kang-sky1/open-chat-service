@@ -13,7 +13,7 @@ public class MemberRepositoryIml implements MemberRepository {
 
     @Override
     public Member save(Member member) {
-        return null;
+        return memberJpaRepository.save(MemberEntity.from(member)).toModel();
     }
 
     @Override
