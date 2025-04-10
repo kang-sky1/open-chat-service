@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.goblin.openchatservice.ControllerTestSupport;
 import com.goblin.openchatservice.domain.member.mock.FakeMemberDto;
 import com.goblin.openchatservice.domain.member.model.CreateMember;
+import com.goblin.openchatservice.domain.member.model.LoginMember;
 import com.goblin.openchatservice.domain.member.model.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,5 +73,50 @@ class MemberControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.validator.password").value("비밀번호는 8글자 이상 16글자 이하여야 합니다."));
     }
 
+
+    @DisplayName("로그인 성공하면, 토큰을 반환한다.")
+    @Test
+    void login() throws Exception {
+        LoginMember loginMember = FakeMemberDto.loginMember();
+        String token = "testToken";
+
+        when(memberService.login(any(LoginMember.class))).thenReturn(token);
+
+        mockMvc.perform(
+                        post(BASE_URL + "/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginMember))
+                ).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(result -> result.getResponse().getCookie("Authorization").getValue().equals(token));
+    }
+
+    @DisplayName("email 필드는 이메일 형식이어야 한다.")
+    @Test
+    void login_invalidEmail() throws Exception {
+        LoginMember loginMember = FakeMemberDto.customLoginMember("testEmail", "testPassword");
+
+        mockMvc.perform(
+                        post(BASE_URL + "/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginMember))
+                ).andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validator.email").value("이메일 형식이 맞지 않습니다."));
+    }
+
+    @DisplayName("password는 8글자 이상 16글자 이하여야 한다.")
+    @Test
+    void login_invalidPassword() throws Exception {
+        LoginMember loginMember = FakeMemberDto.customLoginMember("testEmail@naver.com", "testPassword12341234");
+
+        mockMvc.perform(
+                        post(BASE_URL + "/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginMember))
+                ).andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validator.password").value("비밀번호는 8글자 이상 16글자 이하여야 합니다."));
+    }
 
 }
