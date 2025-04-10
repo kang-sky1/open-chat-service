@@ -21,4 +21,12 @@ public class MemberRepositoryIml implements MemberRepository {
         return null;
     }
 
+    @Override
+    public Member findByEmail(String email) {
+        return memberJpaRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."))
+                .toModel();
+    }
+
 }
