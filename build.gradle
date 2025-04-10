@@ -8,6 +8,7 @@ group = 'com.goblin'
 version = '0.0.1-SNAPSHOT'
 
 java {
+
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
@@ -40,6 +41,12 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
+}
+
+tasks.register('update-properties', Copy){
+    from("yml/")
+    into("src/main/resources")
+    include("*.yml")
 }
 
 tasks.named('test') {
