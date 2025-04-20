@@ -4,5 +4,6 @@ public interface TokenProvider {
 
     String createToken(Long memberId);
     String getSubjectFromToken(String token);
+    boolean validateToken(String token);
 }
 

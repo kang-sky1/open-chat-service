@@ -13,4 +13,9 @@ public class FakeTokenProvider implements TokenProvider {
     public String getSubjectFromToken(String token) {
         return "";
     }
+
+    @Override
+    public boolean validateToken(String token) {
+        return false;
+    }
 }
