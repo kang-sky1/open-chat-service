@@ -2,6 +2,7 @@ package com.goblin.openchatservice.domain.member.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,6 +16,7 @@ import com.goblin.openchatservice.domain.member.model.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+
 
 class MemberControllerTest extends ControllerTestSupport {
 
@@ -72,7 +74,6 @@ class MemberControllerTest extends ControllerTestSupport {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.validator.password").value("비밀번호는 8글자 이상 16글자 이하여야 합니다."));
     }
-
 
     @DisplayName("로그인 성공하면, 토큰을 반환한다.")
     @Test

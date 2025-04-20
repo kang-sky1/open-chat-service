@@ -18,7 +18,9 @@ public class MemberRepositoryIml implements MemberRepository {
 
     @Override
     public Member findById(Long id) {
-        return null;
+        return memberJpaRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 아이디입니다."))
+                .toModel();
     }
 
     @Override
