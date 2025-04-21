@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtProvider implements TokenProvider {
 
-    private static final String BEARER = "Bearer ";
+    private static final String BEARER = "Bearer";
     private final Key key;
 
     public JwtProvider(@Value("${jwt.secret.key}") String secretKey) {
@@ -27,9 +27,10 @@ public class JwtProvider implements TokenProvider {
         this.key = Keys.hmacShaKeyFor(decode);
     }
 
+    @Override
     public boolean validateToken(String token) {
         try {
-            Claims claimsFromToken = getClaimsFromToken(token);
+            Claims claimsFromToken = getClaimsFromToken(parseRequestToken(token));
             isExpiredToken(claimsFromToken);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
@@ -48,20 +49,22 @@ public class JwtProvider implements TokenProvider {
     public String createToken(Long memberId) {
         Date expirationDate = createExpirationDate(60 * 60 * 1000);
         return BEARER + Jwts.builder()
-            .setSubject(String.valueOf(memberId))
-            .setExpiration(expirationDate)
-            .setIssuedAt(new Date())
-            .signWith(key, SignatureAlgorithm.HS512)
-            .compact();
+                .setSubject(String.valueOf(memberId))
+                .setExpiration(expirationDate)
+                .setIssuedAt(new Date())
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
     }
 
     @Override
     public String getSubjectFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
+        Claims claims = getClaimsFromToken(parseRequestToken(token));
         return claims.getSubject();
     }
 
-
+    private String parseRequestToken(String token) {
+        return token.replace(BEARER, "");
+    }
 
     private Date createExpirationDate(long expirationTime) {
         long currentTimeMillis = System.currentTimeMillis();
@@ -70,11 +73,10 @@ public class JwtProvider implements TokenProvider {
 
     private Claims getClaimsFromToken(String token) {
         return Jwts.parser()
-            .setSigningKey(key)
-            .build()
-
-            .parseClaimsJws(token)
-            .getBody();
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private void isExpiredToken(Claims claims) {
