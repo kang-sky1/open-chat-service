@@ -16,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
 @EnableWebSecurity(debug = true)
@@ -35,6 +34,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher("/api")
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -48,6 +48,23 @@ public class SecurityConfig {
         http.addFilterBefore(authorizationFilter(), LoginFilter.class);
         http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public SecurityFilterChain stompFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/stomp/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/stomp/**").permitAll()
+                        .anyRequest().authenticated()
+                );
+
+        return  http.build();
     }
 
     @Bean

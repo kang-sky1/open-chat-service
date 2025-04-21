@@ -34,4 +34,9 @@ public class FakeRoomRepository implements RoomRepository {
                 .findFirst()
                 .orElseThrow(()-> new EntityNotFoundException("해당 방을 찾을 수 없습니다."));
     }
+
+    @Override
+    public List<Room> findAll() {
+        return rooms;
+    }
 }
